@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
-from database import engine, SessionLocal
+from database import engine, SessionLocal, get_db
 from models import Job
 
 app = FastAPI()
@@ -12,6 +13,7 @@ class JobCreate(BaseModel):
     company: str
     role: str
     location: str
+    status: str
 
 
 @app.get("/")
@@ -28,7 +30,8 @@ def create_job(job: JobCreate):
     new_job = Job(
         company=job.company,
         role=job.role,
-        location=job.location
+        location=job.location,
+        status=job.status
     )
 
     db.add(new_job)
@@ -41,14 +44,24 @@ def create_job(job: JobCreate):
 
 #------------R = Read--------------------------
 @app.get("/jobs")
-def get_jobs():
-    db = SessionLocal()
+def get_jobs(
+    status: str = None,
+    company: str = None,
+    role: str = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(Job)
 
-    jobs = db.query(Job).all()
+    if status:
+        query = query.filter(Job.status == status)
 
-    db.close()
+    if company:
+        query = query.filter(Job.company.ilike(f"%{company}%"))
 
-    return jobs
+    if role:
+        query = query.filter(Job.role.ilike(f"%{role}%"))
+
+    return query.all()
 
 #------------U = Update--------------------------
 @app.put("/jobs/{job_id}")
@@ -64,6 +77,7 @@ def update_job(job_id: int, job: JobCreate):
     existing_job.company = job.company
     existing_job.role = job.role
     existing_job.location = job.location
+    existing_job.status = job.status
 
     db.commit()
     db.refresh(existing_job)

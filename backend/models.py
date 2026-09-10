@@ -9,3 +9,4 @@ class Job(Base):
     company = Column(String(100), nullable=False)
     role = Column(String(100), nullable=False)
     location = Column(String(100), nullable=False)
+    status = Column(String(50), nullable=False, default="Applied")
