@@ -16,6 +16,13 @@ class JobCreate(BaseModel):
     status: JobStatus
 
 
+class JobUpdate(BaseModel):
+    company: str | None = None
+    role: str | None = None
+    location: str | None = None
+    status: JobStatus | None = None
+
+
 class JobResponse(BaseModel):
     id: int
     company: str

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from database import engine, SessionLocal, get_db
 from models import Job
-from schemas import JobCreate, JobResponse
+from schemas import JobCreate, JobUpdate, JobResponse
 
 app = FastAPI()
 
@@ -103,3 +103,32 @@ def delete_job(
     db.close()
 
     return {"message": "Job deleted successfully"}
+
+#------------ PATCH (update only the field(s) you want to change) --------------------------
+@app.patch("/jobs/{job_id}", response_model=JobResponse)
+def patch_job(
+    job_id: int,
+    job: JobUpdate,
+    db: Session = Depends(get_db)
+):
+    existing_job = db.query(Job).filter(Job.id == job_id).first()
+
+    if existing_job is None:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    if job.company is not None:
+        existing_job.company = job.company
+
+    if job.role is not None:
+        existing_job.role = job.role
+
+    if job.location is not None:
+        existing_job.location = job.location
+
+    if job.status is not None:
+        existing_job.status = job.status
+
+    db.commit()
+    db.refresh(existing_job)
+
+    return existing_job
