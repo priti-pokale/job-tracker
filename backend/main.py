@@ -48,6 +48,8 @@ def get_jobs(
     status: str = None,
     company: str = None,
     role: str = None,
+    skip: int = 0,
+    limit: int = 10,
     db: Session = Depends(get_db)
 ):
     query = db.query(Job)
@@ -61,7 +63,9 @@ def get_jobs(
     if role:
         query = query.filter(Job.role.ilike(f"%{role}%"))
 
-    return query.all()
+    jobs = query.offset(skip).limit(limit).all()
+
+    return jobs
 
 #------------U = Update--------------------------
 @app.put("/jobs/{job_id}")
