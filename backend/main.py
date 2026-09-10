@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from database import engine, SessionLocal, get_db
 from models import Job
-from schemas import JobCreate
+from schemas import JobCreate, JobResponse
 
 app = FastAPI()
 
@@ -18,7 +18,7 @@ def home():
 #------------ CRUD OPERATIONS --------------------------
 
 #------------C = Create--------------------------
-@app.post("/jobs")
+@app.post("/jobs", response_model=JobResponse)
 def create_job(job: JobCreate):
     db = SessionLocal()
 
@@ -38,7 +38,7 @@ def create_job(job: JobCreate):
     return new_job
 
 #------------R = Read--------------------------
-@app.get("/jobs")
+@app.get("/jobs", response_model=list[JobResponse])
 def get_jobs(
     status: str = None,
     company: str = None,
@@ -63,7 +63,7 @@ def get_jobs(
     return jobs
 
 #------------U = Update--------------------------
-@app.put("/jobs/{job_id}")
+@app.put("/jobs/{job_id}", response_model=JobResponse)
 def update_job(job_id: int, job: JobCreate):
     db = SessionLocal()
 
