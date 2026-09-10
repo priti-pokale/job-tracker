@@ -42,6 +42,8 @@ def get_jobs(
     role: str = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
+    sort_by: str = "id",
+    order: str = "asc",
     db: Session = Depends(get_db)
 ):
     query = db.query(Job)
@@ -54,6 +56,20 @@ def get_jobs(
 
     if role:
         query = query.filter(Job.role.ilike(f"%{role}%"))
+
+    if sort_by == "company":
+        sort_column = Job.company
+    elif sort_by == "role":
+        sort_column = Job.role
+    elif sort_by == "status":
+        sort_column = Job.status
+    else:
+        sort_column = Job.id
+
+    if order == "desc":
+        query = query.order_by(sort_column.desc())
+    else:
+        query = query.order_by(sort_column.asc())
 
     jobs = query.offset(skip).limit(limit).all()
 
