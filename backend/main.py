@@ -4,16 +4,11 @@ from sqlalchemy.orm import Session
 
 from database import engine, SessionLocal, get_db
 from models import Job
+from schemas import JobCreate
 
 app = FastAPI()
 
 Job.metadata.create_all(bind=engine)
-
-class JobCreate(BaseModel):
-    company: str
-    role: str
-    location: str
-    status: str
 
 
 @app.get("/")
