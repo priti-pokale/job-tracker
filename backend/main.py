@@ -19,8 +19,7 @@ def home():
 
 #------------C = Create--------------------------
 @app.post("/jobs", response_model=JobResponse)
-def create_job(job: JobCreate):
-    db = SessionLocal()
+def create_job(job: JobCreate, db: Session = Depends(get_db)):
 
     new_job = Job(
         company=job.company,
@@ -32,8 +31,6 @@ def create_job(job: JobCreate):
     db.add(new_job)
     db.commit()
     db.refresh(new_job)
-
-    db.close()
 
     return new_job
 
@@ -64,9 +61,11 @@ def get_jobs(
 
 #------------U = Update--------------------------
 @app.put("/jobs/{job_id}", response_model=JobResponse)
-def update_job(job_id: int, job: JobCreate):
-    db = SessionLocal()
-
+def update_job(
+    job_id: int,
+    job: JobCreate,
+    db: Session = Depends(get_db)
+):
     existing_job = db.query(Job).filter(Job.id == job_id).first()
 
     if existing_job is None:
@@ -88,9 +87,10 @@ def update_job(job_id: int, job: JobCreate):
 
 #------------D = Delete--------------------------
 @app.delete("/jobs/{job_id}")
-def delete_job(job_id: int):
-    db = SessionLocal()
-
+def delete_job(
+    job_id: int,
+    db: Session = Depends(get_db)
+):
     existing_job = db.query(Job).filter(Job.id == job_id).first()
 
     if existing_job is None:
