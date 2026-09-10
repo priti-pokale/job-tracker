@@ -36,10 +36,12 @@ def create_job(job: JobCreate, db: Session = Depends(get_db)):
 
 #------------R = Read--------------------------
 @app.get("/jobs", response_model=list[JobResponse])
+@app.get("/jobs", response_model=list[JobResponse])
 def get_jobs(
     status: str = None,
     company: str = None,
     role: str = None,
+    search: str = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     sort_by: str = "id",
@@ -56,6 +58,13 @@ def get_jobs(
 
     if role:
         query = query.filter(Job.role.ilike(f"%{role}%"))
+
+    if search:
+        query = query.filter(
+            (Job.company.ilike(f"%{search}%")) |
+            (Job.role.ilike(f"%{search}%")) |
+            (Job.location.ilike(f"%{search}%"))
+        )
 
     if sort_by == "company":
         sort_column = Job.company
