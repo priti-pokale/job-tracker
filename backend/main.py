@@ -109,6 +109,23 @@ def update_job(
 
     return existing_job
 
+#---------- GET THE JOB STATUS --------------------------
+@app.get("/jobs/stats")
+def get_job_stats(db: Session = Depends(get_db)):
+    total = db.query(Job).count()
+
+    applied = db.query(Job).filter(Job.status == "Applied").count()
+    interview = db.query(Job).filter(Job.status == "Interview").count()
+    rejected = db.query(Job).filter(Job.status == "Rejected").count()
+    selected = db.query(Job).filter(Job.status == "Selected").count()
+
+    return {
+        "total": total,
+        "Applied": applied,
+        "Interview": interview,
+        "Rejected": rejected,
+        "Selected": selected
+    }
 
 #------------D = Delete--------------------------
 @app.delete("/jobs/{job_id}")
