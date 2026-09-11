@@ -19,20 +19,30 @@ def home():
 
 #------------C = Create--------------------------
 @app.post("/jobs", response_model=JobResponse)
-def create_job(job: JobCreate, db: Session = Depends(get_db)):
+def create_job(
+    job: JobCreate,
+    db: Session = Depends(get_db)
+):
+    try:
+        new_job = Job(
+            company=job.company,
+            role=job.role,
+            location=job.location,
+            status=job.status
+        )
 
-    new_job = Job(
-        company=job.company,
-        role=job.role,
-        location=job.location,
-        status=job.status
-    )
+        db.add(new_job)
+        db.commit()
+        db.refresh(new_job)
 
-    db.add(new_job)
-    db.commit()
-    db.refresh(new_job)
+        return new_job
 
-    return new_job
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to create job"
+        )
 
 #------------R = Read--------------------------
 @app.get("/jobs", response_model=list[JobResponse])
@@ -94,20 +104,28 @@ def update_job(
     existing_job = db.query(Job).filter(Job.id == job_id).first()
 
     if existing_job is None:
-        db.close()
-        return {"message": "Job not found"}
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
 
     existing_job.company = job.company
     existing_job.role = job.role
     existing_job.location = job.location
     existing_job.status = job.status
 
-    db.commit()
-    db.refresh(existing_job)
+    try:
+        db.commit()
+        db.refresh(existing_job)
 
-    db.close()
+        return existing_job
 
-    return existing_job
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to update job"
+        )
 
 #---------- GET THE JOB STATUS --------------------------
 @app.get("/jobs/stats")
@@ -136,15 +154,25 @@ def delete_job(
     existing_job = db.query(Job).filter(Job.id == job_id).first()
 
     if existing_job is None:
-        db.close()
-        return {"message": "Job not found"}
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
 
-    db.delete(existing_job)
-    db.commit()
+    try:
+        db.delete(existing_job)
+        db.commit()
 
-    db.close()
+        return {
+            "message": "Job deleted successfully"
+        }
 
-    return {"message": "Job deleted successfully"}
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to delete job"
+        )
 
 #------------ PATCH (update only the field(s) you want to change) --------------------------
 @app.patch("/jobs/{job_id}", response_model=JobResponse)
@@ -156,7 +184,10 @@ def patch_job(
     existing_job = db.query(Job).filter(Job.id == job_id).first()
 
     if existing_job is None:
-        raise HTTPException(status_code=404, detail="Job not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
 
     if job.company is not None:
         existing_job.company = job.company
@@ -170,7 +201,15 @@ def patch_job(
     if job.status is not None:
         existing_job.status = job.status
 
-    db.commit()
-    db.refresh(existing_job)
+    try:
+        db.commit()
+        db.refresh(existing_job)
 
-    return existing_job
+        return existing_job
+
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to update job"
+        )
