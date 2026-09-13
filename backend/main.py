@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from database import engine, SessionLocal, get_db
+from database import engine, get_db
 from models import Job
 from schemas import JobCreate, JobUpdate, JobResponse
 
@@ -18,11 +18,8 @@ def home():
 #------------ CRUD OPERATIONS --------------------------
 
 #------------C = Create--------------------------
-@app.post("/jobs", response_model=JobResponse)
-def create_job(
-    job: JobCreate,
-    db: Session = Depends(get_db)
-):
+@app.post("/jobs")
+def create_job(job: JobCreate, db: Session = Depends(get_db)):
     try:
         new_job = Job(
             company=job.company,
@@ -45,7 +42,6 @@ def create_job(
         )
 
 #------------R = Read--------------------------
-@app.get("/jobs", response_model=list[JobResponse])
 @app.get("/jobs", response_model=list[JobResponse])
 def get_jobs(
     status: str = None,
@@ -139,11 +135,26 @@ def get_job_stats(db: Session = Depends(get_db)):
 
     return {
         "total": total,
-        "Applied": applied,
-        "Interview": interview,
-        "Rejected": rejected,
-        "Selected": selected
-    }
+        "applied": applied,
+        "interview": interview,
+        "rejected": rejected,
+        "selected": selected
+}
+
+@app.get("/jobs/{job_id}", response_model=JobResponse)
+def get_job(
+    job_id: int,
+    db: Session = Depends(get_db)
+):
+    job = db.query(Job).filter(Job.id == job_id).first()
+
+    if job is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
+
+    return job
 
 #------------D = Delete--------------------------
 @app.delete("/jobs/{job_id}")
