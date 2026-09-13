@@ -20,7 +20,12 @@ def home():
     return {"message": "Job Tracker API is running!"}
 
 # Create Job
-@app.post("/jobs", tags=["Jobs"])
+@app.post(
+    "/jobs",
+    tags=["Jobs"],
+    summary="Create a new job",
+    description="Create and save a new job application in the database."
+)
 def create_job(job: JobCreate, db: Session = Depends(get_db)):
     try:
         new_job = Job(
@@ -44,7 +49,13 @@ def create_job(job: JobCreate, db: Session = Depends(get_db)):
         )
 
 # Get All Jobs
-@app.get("/jobs", response_model=list[JobResponse], tags=["Jobs"])
+@app.get(
+    "/jobs",
+    response_model=list[JobResponse],
+    tags=["Jobs"],
+    summary="Get all jobs",
+    description="Get a list of job applications with optional filtering, searching, pagination, and sorting."
+)
 def get_jobs(
     status: str = None,
     company: str = None,
@@ -111,7 +122,13 @@ def get_job_stats(db: Session = Depends(get_db)):
 }
 
 # Get Single Job
-@app.get("/jobs/{job_id}", response_model=JobResponse, tags=["Jobs"])
+@app.get(
+    "/jobs/{job_id}",
+    response_model=JobResponse,
+    tags=["Jobs"],
+    summary="Get a job by ID",
+    description="Get the details of a specific job application using its ID."
+)
 def get_job(
     job_id: int,
     db: Session = Depends(get_db)
@@ -127,7 +144,13 @@ def get_job(
     return job
 
 # Update Job
-@app.put("/jobs/{job_id}", response_model=JobResponse, tags=["Jobs"])
+@app.put(
+    "/jobs/{job_id}",
+    response_model=JobResponse,
+    tags=["Jobs"],
+    summary="Update a job",
+    description="Update all details of an existing job application using its ID."
+)
 def update_job(
     job_id: int,
     job: JobCreate,
@@ -161,7 +184,12 @@ def update_job(
 
 
 # Delete Job
-@app.delete("/jobs/{job_id}", tags=["Jobs"])
+@app.delete(
+    "/jobs/{job_id}",
+    tags=["Jobs"],
+    summary="Delete a job",
+    description="Delete an existing job application using its ID."
+)
 def delete_job(
     job_id: int,
     db: Session = Depends(get_db)
@@ -190,7 +218,13 @@ def delete_job(
         )
 
 # PATCH Job (update only the field(s) you want to change)
-@app.patch("/jobs/{job_id}", response_model=JobResponse, tags=["Jobs"])
+@app.patch(
+    "/jobs/{job_id}",
+    response_model=JobResponse,
+    tags=["Jobs"],
+    summary="Partially update a job",
+    description="Update only the fields provided for an existing job application."
+)
 def patch_job(
     job_id: int,
     job: JobUpdate,
