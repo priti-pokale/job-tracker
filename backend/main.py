@@ -6,7 +6,11 @@ from database import engine, get_db
 from models import Job
 from schemas import JobCreate, JobUpdate, JobResponse
 
-app = FastAPI()
+app = FastAPI(
+    title="Job Tracker API",
+    description="A REST API to manage and track job applications.",
+    version="1.0.0"
+)
 
 Job.metadata.create_all(bind=engine)
 
