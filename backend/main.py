@@ -14,15 +14,13 @@ app = FastAPI(
 
 Job.metadata.create_all(bind=engine)
 
-
-@app.get("/")
+# Home endpoint
+@app.get("/", tags=["General"])
 def home():
     return {"message": "Job Tracker API is running!"}
 
-#------------ CRUD OPERATIONS --------------------------
-
-#------------C = Create--------------------------
-@app.post("/jobs")
+# Create Job
+@app.post("/jobs", tags=["Jobs"])
 def create_job(job: JobCreate, db: Session = Depends(get_db)):
     try:
         new_job = Job(
@@ -45,8 +43,8 @@ def create_job(job: JobCreate, db: Session = Depends(get_db)):
             detail="Failed to create job"
         )
 
-#------------R = Read--------------------------
-@app.get("/jobs", response_model=list[JobResponse])
+# Get All Jobs
+@app.get("/jobs", response_model=list[JobResponse], tags=["Jobs"])
 def get_jobs(
     status: str = None,
     company: str = None,
@@ -94,8 +92,42 @@ def get_jobs(
 
     return jobs
 
-#------------U = Update--------------------------
-@app.put("/jobs/{job_id}", response_model=JobResponse)
+# Statistics
+@app.get("/jobs/stats", tags=["Statistics"])
+def get_job_stats(db: Session = Depends(get_db)):
+    total = db.query(Job).count()
+
+    applied = db.query(Job).filter(Job.status == "Applied").count()
+    interview = db.query(Job).filter(Job.status == "Interview").count()
+    rejected = db.query(Job).filter(Job.status == "Rejected").count()
+    selected = db.query(Job).filter(Job.status == "Selected").count()
+
+    return {
+        "total": total,
+        "applied": applied,
+        "interview": interview,
+        "rejected": rejected,
+        "selected": selected
+}
+
+# Get Single Job
+@app.get("/jobs/{job_id}", response_model=JobResponse, tags=["Jobs"])
+def get_job(
+    job_id: int,
+    db: Session = Depends(get_db)
+):
+    job = db.query(Job).filter(Job.id == job_id).first()
+
+    if job is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
+
+    return job
+
+# Update Job
+@app.put("/jobs/{job_id}", response_model=JobResponse, tags=["Jobs"])
 def update_job(
     job_id: int,
     job: JobCreate,
@@ -127,41 +159,9 @@ def update_job(
             detail="Failed to update job"
         )
 
-#---------- GET THE JOB STATUS --------------------------
-@app.get("/jobs/stats")
-def get_job_stats(db: Session = Depends(get_db)):
-    total = db.query(Job).count()
 
-    applied = db.query(Job).filter(Job.status == "Applied").count()
-    interview = db.query(Job).filter(Job.status == "Interview").count()
-    rejected = db.query(Job).filter(Job.status == "Rejected").count()
-    selected = db.query(Job).filter(Job.status == "Selected").count()
-
-    return {
-        "total": total,
-        "applied": applied,
-        "interview": interview,
-        "rejected": rejected,
-        "selected": selected
-}
-
-@app.get("/jobs/{job_id}", response_model=JobResponse)
-def get_job(
-    job_id: int,
-    db: Session = Depends(get_db)
-):
-    job = db.query(Job).filter(Job.id == job_id).first()
-
-    if job is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Job not found"
-        )
-
-    return job
-
-#------------D = Delete--------------------------
-@app.delete("/jobs/{job_id}")
+# Delete Job
+@app.delete("/jobs/{job_id}", tags=["Jobs"])
 def delete_job(
     job_id: int,
     db: Session = Depends(get_db)
@@ -189,8 +189,8 @@ def delete_job(
             detail="Failed to delete job"
         )
 
-#------------ PATCH (update only the field(s) you want to change) --------------------------
-@app.patch("/jobs/{job_id}", response_model=JobResponse)
+# PATCH Job (update only the field(s) you want to change)
+@app.patch("/jobs/{job_id}", response_model=JobResponse, tags=["Jobs"])
 def patch_job(
     job_id: int,
     job: JobUpdate,
