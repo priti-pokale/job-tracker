@@ -6,6 +6,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [showForm, setShowForm] = useState(false)
+  const [editingJob, setEditingJob] = useState(null)
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/jobs?skip=0&limit=100")
@@ -34,42 +35,78 @@ function App() {
   })
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+  e.preventDefault()
 
-    try {
-      const response = await fetch("http://127.0.0.1:8000/jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      })
+  try {
+    let response
 
-      if (!response.ok) {
-        throw new Error("Failed to create job")
-      }
+    if (editingJob) {
+      // Update existing job
+      response = await fetch(
+        `http://127.0.0.1:8000/jobs/${editingJob.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        }
+      )
+    } else {
+      // Create new job
+      response = await fetch(
+        "http://127.0.0.1:8000/jobs",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        }
+      )
+    }
 
-      const data = await response.json()
+    if (!response.ok) {
+      throw new Error("Failed to save job")
+    }
 
-      console.log("Job created:", data)
+    const data = await response.json()
+
+    if (editingJob) {
+      // Replace the old job with updated job
+      setJobs((previousJobs) =>
+        previousJobs.map((job) =>
+          job.id === data.id ? data : job
+        )
+      )
+
+      alert("Job updated successfully!")
+    } else {
+      // Add new job to list
+      setJobs((previousJobs) => [
+        ...previousJobs,
+        data
+      ])
 
       alert("Job added successfully!")
-
-      setJobs((previousJobs) => [...previousJobs, data])
-
-      setFormData({
-        company: "",
-        role: "",
-        location: "",
-        status: "Applied"
-      })
-
-      setShowForm(false)
-    } catch (error) {
-      console.error(error)
-      alert("Failed to add job")
     }
+
+    // Reset form
+    setFormData({
+      company: "",
+      role: "",
+      location: "",
+      status: "Applied"
+    })
+
+    setEditingJob(null)
+    setShowForm(false)
+
+  } catch (error) {
+    console.error(error)
+    alert("Failed to save job")
   }
+}
 
   const handleDelete = async (jobId) => {
   const confirmed = window.confirm(
@@ -102,6 +139,19 @@ function App() {
     alert("Failed to delete job")
   }
 }
+
+  const handleEdit = (job) => {
+    setEditingJob(job)
+
+    setFormData({
+      company: job.company,
+      role: job.role,
+      location: job.location,
+      status: job.status
+    })
+
+    setShowForm(true)
+  }
 
   return (
     <div className="app">
@@ -156,7 +206,7 @@ function App() {
           {showForm ? (
             <form className="job-form" onSubmit={handleSubmit}>
 
-              <h3>Add New Job</h3>
+              <h3>{editingJob ? "Edit Job" : "Add New Job"}</h3>
 
               <div className="form-group">
                 <label>Company</label>
@@ -228,7 +278,7 @@ function App() {
                   type="submit"
                   className="save-button"
                 >
-                  Save Job
+                  {editingJob ? "Update Job" : "Save Job"}
                 </button>
 
                 <button
@@ -284,7 +334,7 @@ function App() {
 
                       <button
                         className="edit-button"
-                        onClick={() => alert(`Edit job ${job.id}`)}
+                        onClick={() => handleEdit(job)}
                       >
                         Edit
                       </button>
