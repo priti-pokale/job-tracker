@@ -152,3 +152,75 @@
   background: #e5e7eb;
   color: #111827;
 }
+
+.jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.job-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.job-card h3 {
+  margin-bottom: 6px;
+  font-size: 18px;
+}
+
+.job-card p {
+  margin-bottom: 5px;
+  color: #374151;
+}
+
+.job-card span {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.job-status {
+  display: inline-block;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: #eef2ff;
+  color: #374151 !important;
+  font-size: 13px !important;
+  font-weight: 600;
+}
+
+.job-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-button,
+.delete-button {
+  padding: 7px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.edit-button {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.delete-button {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.edit-button:hover,
+.delete-button:hover {
+  opacity: 0.8;
+}
