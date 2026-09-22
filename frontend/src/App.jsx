@@ -7,25 +7,42 @@ function App() {
   const [error, setError] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [editingJob, setEditingJob] = useState(null)
+  const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState("")
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/jobs?skip=0&limit=100")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch jobs")
-        }
-        return response.json()
-      })
-      .then((data) => {
-        setJobs(data)
-        setLoading(false)
-      })
-      .catch((error) => {
-        console.error(error)
-        setError("Failed to load jobs")
-        setLoading(false)
-      })
-  }, [])
+  const params = new URLSearchParams()
+
+  params.append("skip", "0")
+  params.append("limit", "100")
+
+  if (search.trim() !== "") {
+    params.append("search", search)
+  }
+
+  if (statusFilter !== "") {
+    params.append("status", statusFilter)
+  }
+
+  fetch(`http://127.0.0.1:8000/jobs?${params.toString()}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch jobs")
+      }
+
+      return response.json()
+    })
+    .then((data) => {
+      setJobs(data)
+      setLoading(false)
+    })
+    .catch((error) => {
+      console.error(error)
+      setError("Failed to load jobs")
+      setLoading(false)
+    })
+  }, [search, statusFilter])
+
 
   const [formData, setFormData] = useState({
     company: "",
@@ -203,6 +220,28 @@ function App() {
             </button>
           </div>
 
+          <div className="filters">
+
+            <input
+              type="text"
+              placeholder="Search company, role or location..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">All Status</option>
+              <option value="Applied">Applied</option>
+              <option value="Interview">Interview</option>
+              <option value="Selected">Selected</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+
+          </div>
+
           {showForm ? (
             <form className="job-form" onSubmit={handleSubmit}>
 
@@ -317,7 +356,21 @@ function App() {
 
               {!loading && !error && jobs.length > 0 && (
                 <div className="jobs-list">
-                  {jobs.map((job) => (
+                  {jobs
+                      .filter((job) => {
+                        const searchText = search.toLowerCase()
+
+                        const matchesSearch =
+                          job.company.toLowerCase().includes(searchText) ||
+                          job.role.toLowerCase().includes(searchText) ||
+                          job.location.toLowerCase().includes(searchText)
+
+                        const matchesStatus =
+                          statusFilter === "" || job.status === statusFilter
+
+                        return matchesSearch && matchesStatus
+                      })
+                      .map((job) => (
                   <div className="job-card" key={job.id}>
 
                     <div>

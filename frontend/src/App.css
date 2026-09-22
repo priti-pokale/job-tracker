@@ -224,3 +224,27 @@
 .delete-button:hover {
   opacity: 0.8;
 }
+
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.filters input,
+.filters select {
+  padding: 11px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  font-size: 14px;
+}
+
+.filters input {
+  flex: 1;
+}
+
+.filters input:focus,
+.filters select:focus {
+  outline: none;
+  border-color: #111827;
+}
