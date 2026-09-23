@@ -298,3 +298,66 @@
 .empty-state .add-button {
   margin-top: 5px;
 }
+
+@media (max-width: 768px) {
+  .header {
+    padding: 24px 20px;
+  }
+
+  .header h1 {
+    font-size: 26px;
+  }
+
+  .dashboard {
+    padding: 25px 15px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .jobs-section {
+    padding: 20px;
+  }
+
+  .filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filters input,
+  .filters select {
+    width: 100%;
+  }
+
+  .job-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .job-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .add-button {
+    width: 100%;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .pagination button {
+    padding: 9px 14px;
+  }
+}

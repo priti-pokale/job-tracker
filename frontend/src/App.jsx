@@ -67,7 +67,7 @@ function App() {
 
   useEffect(() => {
   setPage(1)
-  }, [search, statusFilter, sortBy, sortOrder, page])
+  }, [search, statusFilter, sortBy, sortOrder])
 
   useEffect(() => {
   fetch("http://127.0.0.1:8000/jobs/stats")
