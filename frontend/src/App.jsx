@@ -9,12 +9,28 @@ function App() {
   const [editingJob, setEditingJob] = useState(null)
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
+  const [page, setPage] = useState(1)
+  const jobsPerPage = 10
+  const [stats, setStats] = useState({
+  total: 0,
+  applied: 0,
+  interview: 0,
+  selected: 0,
+  rejected: 0
+})
 
   useEffect(() => {
   const params = new URLSearchParams()
 
-  params.append("skip", "0")
-  params.append("limit", "100")
+  params.append(
+    "skip",
+    String((page - 1) * jobsPerPage)
+  )
+
+  params.append(
+    "limit",
+    String(jobsPerPage)
+  )
 
   if (search.trim() !== "") {
     params.append("search", search)
@@ -41,8 +57,29 @@ function App() {
       setError("Failed to load jobs")
       setLoading(false)
     })
+  }, [search, statusFilter, page])
+
+  useEffect(() => {
+  setPage(1)
   }, [search, statusFilter])
 
+  useEffect(() => {
+  fetch("http://127.0.0.1:8000/jobs/stats")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch statistics")
+      }
+
+      return response.json()
+    })
+    .then((data) => {
+  console.log("Stats:", data)
+  setStats(data)
+})
+    .catch((error) => {
+      console.error(error)
+    })
+  }, [])
 
   const [formData, setFormData] = useState({
     company: "",
@@ -181,30 +218,32 @@ function App() {
       <main className="dashboard">
 
         <section className="stats">
+
           <div className="stat-card">
             <h3>Total Jobs</h3>
-            <p>{jobs.length}</p>
+            <p>{stats.total}</p>
           </div>
 
           <div className="stat-card">
             <h3>Applied</h3>
-            <p>{jobs.filter((job) => job.status === "Applied").length}</p>
+            <p>{stats.applied}</p>
           </div>
 
           <div className="stat-card">
             <h3>Interview</h3>
-            <p>{jobs.filter((job) => job.status === "Interview").length}</p>
+            <p>{stats.interview}</p>
           </div>
 
           <div className="stat-card">
             <h3>Selected</h3>
-            <p>{jobs.filter((job) => job.status === "Selected").length}</p>
+            <p>{stats.selected}</p>
           </div>
 
           <div className="stat-card">
             <h3>Rejected</h3>
-            <p>{jobs.filter((job) => job.status === "Rejected").length}</p>
+            <p>{stats.rejected}</p>
           </div>
+
         </section>
 
         <section className="jobs-section">
@@ -355,56 +394,65 @@ function App() {
               )}
 
               {!loading && !error && jobs.length > 0 && (
-                <div className="jobs-list">
-                  {jobs
-                      .filter((job) => {
-                        const searchText = search.toLowerCase()
+  <>
+    <div className="jobs-list">
+      {jobs
+        .map((job) => (
+          <div className="job-card" key={job.id}>
 
-                        const matchesSearch =
-                          job.company.toLowerCase().includes(searchText) ||
-                          job.role.toLowerCase().includes(searchText) ||
-                          job.location.toLowerCase().includes(searchText)
+            <div>
+              <h3>{job.company}</h3>
+              <p>{job.role}</p>
+              <span>{job.location}</span>
+            </div>
 
-                        const matchesStatus =
-                          statusFilter === "" || job.status === statusFilter
+            <div className="job-actions">
 
-                        return matchesSearch && matchesStatus
-                      })
-                      .map((job) => (
-                  <div className="job-card" key={job.id}>
+              <span className="job-status">
+                {job.status}
+              </span>
 
-                    <div>
-                      <h3>{job.company}</h3>
-                      <p>{job.role}</p>
-                      <span>{job.location}</span>
-                    </div>
+              <button
+                className="edit-button"
+                onClick={() => handleEdit(job)}
+              >
+                Edit
+              </button>
 
-                    <div className="job-actions">
+              <button
+                className="delete-button"
+                onClick={() => handleDelete(job.id)}
+              >
+                Delete
+              </button>
 
-                      <span className="job-status">
-                        {job.status}
-                      </span>
+            </div>
 
-                      <button
-                        className="edit-button"
-                        onClick={() => handleEdit(job)}
-                      >
-                        Edit
-                      </button>
+          </div>
+        ))}
+    </div>
 
-                      <button
-                        className="delete-button"
-                        onClick={() => handleDelete(job.id)}
-                      >
-                        Delete
-                      </button>
+    <div className="pagination">
 
-                    </div>
+      <button
+        onClick={() => setPage(page - 1)}
+        disabled={page === 1}
+      >
+        Previous
+      </button>
 
-                  </div>
-                ))}
-              </div>
-              )}
+      <span>Page {page}</span>
+
+      <button
+        onClick={() => setPage(page + 1)}
+        disabled={jobs.length < jobsPerPage}
+      >
+        Next
+      </button>
+
+    </div>
+  </>
+)}
             </>
           )}
 
