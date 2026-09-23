@@ -1,35 +1,73 @@
-# Job Tracker API
+# Job Tracker
 
-A REST API built with FastAPI and PostgreSQL to manage and track job applications.
+A full-stack web application to manage, track, and organize job applications.
+
+The project provides a React frontend connected to a FastAPI backend and PostgreSQL database. It supports job application management, searching, filtering, sorting, pagination, statistics, and application-date tracking.
 
 ## 🚀 Features
 
-- Create job applications
-- Get all job applications
-- Get a job by ID
-- Update a complete job application
-- Partially update a job application
+### Job Management
+- Add new job applications
+- View job applications
+- Edit existing job applications
 - Delete job applications
-- Filter jobs by status
-- Filter jobs by company
-- Filter jobs by role
+- Track application date
+- Track application status
+
+### Search & Filtering
 - Search jobs by company, role, or location
-- Pagination
-- Sorting
-- Job application statistics
+- Filter jobs by status
+- Combine search and status filtering
+
+### Sorting & Pagination
+- Sort jobs by company, role, status, or ID
+- Sort in ascending or descending order
+- Paginate job applications
+
+### Dashboard
+- Total job applications
+- Applied applications
+- Interview applications
+- Selected applications
+- Rejected applications
+
+### User Experience
+- Loading state
+- Empty state
+- No matching results state
+- Error state with retry option
+- Responsive design for desktop and mobile
+
+### Backend & Testing
+- REST API built with FastAPI
+- PostgreSQL database
+- SQLAlchemy ORM
+- Pydantic validation
 - Swagger/OpenAPI documentation
 - Automated API testing with pytest
 - Separate PostgreSQL test database
 
 ## 🛠️ Tech Stack
 
+### Frontend
+- React
+- Vite
+- JavaScript
+- CSS
+
+### Backend
 - Python
 - FastAPI
 - SQLAlchemy
-- PostgreSQL
 - Pydantic
-- Pytest
 - Uvicorn
+
+### Database
+- PostgreSQL
+
+### Testing
+- Pytest
+- FastAPI TestClient
 
 ## 📁 Project Structure
 
@@ -43,7 +81,16 @@ job-tracker/
 │   ├── schemas.py
 │   ├── test_main.py
 │   ├── requirements.txt
-│   └── .env
+│   ├── .env
+│   └── venv/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── App.css
+│   │   └── index.css
+│   ├── package.json
+│   └── ...
 │
 ├── .gitignore
 └── README.md
