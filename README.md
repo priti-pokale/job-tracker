@@ -90,13 +90,7 @@ job-tracker/
 │   ├── models.py
 │   ├── schemas.py
 │   ├── test_main.py
-<<<<<<< HEAD
 │   └── requirements.txt
-=======
-│   ├── requirements.txt
-│   ├── .env
-│   └── venv/
->>>>>>> 2bbead70b7e6e1351290d5942eb2b6c7a7936214
 │
 ├── frontend/
 │   ├── src/
@@ -112,7 +106,6 @@ job-tracker/
 │
 ├── .gitignore
 └── README.md
-<<<<<<< HEAD
 ```
 
 > `.env`, `venv/`, `node_modules/`, `__pycache__/`, and other local/development files are excluded from Git using `.gitignore`.
@@ -290,5 +283,3 @@ The API has been tested for:
 **Priti Pokale**
 
 Computer Engineering Graduate | DevOps & Automation Enthusiast
-=======
->>>>>>> 2bbead70b7e6e1351290d5942eb2b6c7a7936214
