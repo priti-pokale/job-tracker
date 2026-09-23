@@ -9,6 +9,8 @@ function App() {
   const [editingJob, setEditingJob] = useState(null)
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
+  const [sortBy, setSortBy] = useState("id")
+  const [sortOrder, setSortOrder] = useState("asc")
   const [page, setPage] = useState(1)
   const jobsPerPage = 10
   const [stats, setStats] = useState({
@@ -40,6 +42,10 @@ function App() {
     params.append("status", statusFilter)
   }
 
+  params.append("sort_by", sortBy)
+  params.append("order", sortOrder)
+
+
   fetch(`http://127.0.0.1:8000/jobs?${params.toString()}`)
     .then((response) => {
       if (!response.ok) {
@@ -61,7 +67,7 @@ function App() {
 
   useEffect(() => {
   setPage(1)
-  }, [search, statusFilter])
+  }, [search, statusFilter, sortBy, sortOrder, page])
 
   useEffect(() => {
   fetch("http://127.0.0.1:8000/jobs/stats")
@@ -281,6 +287,24 @@ function App() {
               <option value="Interview">Interview</option>
               <option value="Selected">Selected</option>
               <option value="Rejected">Rejected</option>
+            </select>
+
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="id">Sort By ID</option>
+              <option value="company">Sort By Company</option>
+              <option value="role">Sort By Role</option>
+              <option value="status">Sort By Status</option>
+            </select>
+
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
             </select>
 
           </div>
