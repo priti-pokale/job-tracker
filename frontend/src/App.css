@@ -278,3 +278,9 @@
 .pagination span {
   font-weight: 600;
 }
+
+.applied-date {
+  margin-top: 6px;
+  font-size: 13px !important;
+  color: #6b7280 !important;
+}

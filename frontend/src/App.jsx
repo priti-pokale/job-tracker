@@ -85,13 +85,15 @@ function App() {
     company: "",
     role: "",
     location: "",
-    status: "Applied"
+    status: "Applied",
+    applied_date: ""
   })
 
   const handleSubmit = async (e) => {
   e.preventDefault()
 
   try {
+    console.log("Form data being sent:", formData)
     let response
 
     if (editingJob) {
@@ -150,7 +152,8 @@ function App() {
       company: "",
       role: "",
       location: "",
-      status: "Applied"
+      status: "Applied",
+      applied_date: ""
     })
 
     setEditingJob(null)
@@ -195,17 +198,18 @@ function App() {
 }
 
   const handleEdit = (job) => {
-    setEditingJob(job)
+  setEditingJob(job)
 
-    setFormData({
-      company: job.company,
-      role: job.role,
-      location: job.location,
-      status: job.status
-    })
+  setFormData({
+    company: job.company,
+    role: job.role,
+    location: job.location,
+    status: job.status,
+    applied_date: job.applied_date || ""
+  })
 
-    setShowForm(true)
-  }
+  setShowForm(true)
+}
 
   return (
     <div className="app">
@@ -332,6 +336,21 @@ function App() {
               </div>
 
               <div className="form-group">
+                <label>Application Date</label>
+
+                <input
+                  type="date"
+                  value={formData.applied_date}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      applied_date: e.target.value
+                    })
+                  }
+                />
+              </div>
+
+              <div className="form-group">
                 <label>Status</label>
 
                 <select
@@ -404,6 +423,12 @@ function App() {
               <h3>{job.company}</h3>
               <p>{job.role}</p>
               <span>{job.location}</span>
+
+              {job.applied_date && (
+                <p className="applied-date">
+                  Applied: {job.applied_date}
+                </p>
+              )}
             </div>
 
             <div className="job-actions">

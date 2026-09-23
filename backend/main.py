@@ -37,11 +37,14 @@ def home():
 )
 def create_job(job: JobCreate, db: Session = Depends(get_db)):
     try:
+        print("Received applied_date:", job.applied_date)
+
         new_job = Job(
             company=job.company,
             role=job.role,
             location=job.location,
-            status=job.status
+            status=job.status,
+            applied_date=job.applied_date
         )
 
         db.add(new_job)
@@ -177,6 +180,7 @@ def update_job(
     existing_job.role = job.role
     existing_job.location = job.location
     existing_job.status = job.status
+    existing_job.applied_date = job.applied_date
 
     try:
         db.commit()
