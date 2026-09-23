@@ -284,3 +284,17 @@
   font-size: 13px !important;
   color: #6b7280 !important;
 }
+
+.empty-state h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  margin-bottom: 18px;
+  color: #6b7280;
+}
+
+.empty-state .add-button {
+  margin-top: 5px;
+}

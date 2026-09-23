@@ -417,22 +417,42 @@ function App() {
             <>
               {loading && (
                 <div className="empty-state">
-                  <p>Loading jobs...</p>
+                  <h3>Loading jobs...</h3>
+                  <p>Please wait while we fetch your applications.</p>
                 </div>
               )}
 
               {error && (
                 <div className="empty-state">
+                  <h3>Something went wrong</h3>
                   <p>{error}</p>
+
+                  <button
+                    className="add-button"
+                    onClick={() => window.location.reload()}
+                  >
+                    Try Again
+                  </button>
                 </div>
               )}
 
               {!loading && !error && jobs.length === 0 && (
                 <div className="empty-state">
-                  <h3>No jobs added yet</h3>
-                  <p>
-                    Start tracking your job applications by adding your first job.
-                  </p>
+                  {search || statusFilter ? (
+                    <>
+                      <h3>No matching jobs found</h3>
+                      <p>
+                        Try changing your search or status filter.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h3>No jobs added yet</h3>
+                      <p>
+                        Start tracking your job applications by adding your first job.
+                      </p>
+                    </>
+                  )}
                 </div>
               )}
 
