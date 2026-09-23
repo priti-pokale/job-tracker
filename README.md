@@ -7,6 +7,7 @@ The project provides a React frontend connected to a FastAPI backend and Postgre
 ## 🚀 Features
 
 ### Job Management
+
 - Add new job applications
 - View job applications
 - Edit existing job applications
@@ -15,16 +16,19 @@ The project provides a React frontend connected to a FastAPI backend and Postgre
 - Track application status
 
 ### Search & Filtering
+
 - Search jobs by company, role, or location
 - Filter jobs by status
 - Combine search and status filtering
 
 ### Sorting & Pagination
+
 - Sort jobs by company, role, status, or ID
 - Sort in ascending or descending order
 - Paginate job applications
 
 ### Dashboard
+
 - Total job applications
 - Applied applications
 - Interview applications
@@ -32,6 +36,7 @@ The project provides a React frontend connected to a FastAPI backend and Postgre
 - Rejected applications
 
 ### User Experience
+
 - Loading state
 - Empty state
 - No matching results state
@@ -39,6 +44,7 @@ The project provides a React frontend connected to a FastAPI backend and Postgre
 - Responsive design for desktop and mobile
 
 ### Backend & Testing
+
 - REST API built with FastAPI
 - PostgreSQL database
 - SQLAlchemy ORM
@@ -50,12 +56,14 @@ The project provides a React frontend connected to a FastAPI backend and Postgre
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - React
 - Vite
 - JavaScript
 - CSS
 
 ### Backend
+
 - Python
 - FastAPI
 - SQLAlchemy
@@ -63,9 +71,11 @@ The project provides a React frontend connected to a FastAPI backend and Postgre
 - Uvicorn
 
 ### Database
+
 - PostgreSQL
 
 ### Testing
+
 - Pytest
 - FastAPI TestClient
 
@@ -91,6 +101,10 @@ job-tracker/
 │   │   └── index.css
 │   ├── package.json
 │   └── ...
+│
+├── screenshots/
+│   ├── dashboard-desktop.png
+│   └── dashboard-mobile.png
 │
 ├── .gitignore
 └── README.md
